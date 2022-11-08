@@ -102,7 +102,8 @@ pa<-ggplot(plotyFig2ADat,
   scale_fill_manual(values = sigColors,limits=force, labels=longSigNames) + 
   labs(y="Weight proportion", x="Signature weights and cancer effect weights for Gunnarsson WGS samples") +
   theme(axis.text = element_text(size = 7)) +
-  theme(legend.title=element_text(size=12),legend.text=element_text(size=10))#+   
+  theme(legend.title=element_text(size=12),legend.text=element_text(size=10),
+        legend.justification = 'top')#+   
 
 #get the legend for use in the bottom part of the whole figure
 legend1<-get_legend(pa)
@@ -134,14 +135,14 @@ effects_by_sig$fusion<-gsub("negative","No fusions",effects_by_sig$fusion)
 effects_by_sig$fusion<-factor(effects_by_sig$fusion,levels=repsss)
 
 #plot panel b
-pb<-ggplot(effects_by_sig[sigsWeCareAbout, on = 'signature'],  aes(sig_weight, effect_share, color = fusion)) + 
-  facet_wrap(~signature) + geom_point(show.legend = F) + 
-  xlab('Mutational source weight') + ylab('Cancer effect weight') +
-  scale_color_hue(labels=c("RUNX1::RUNX1T1", "Other fusions", "No fusions"), 
-                  breaks = c('RUNX1::RUNX1T1', 'Other fusions', 'No fusions')) +
-  scale_color_manual(values = fusColors,limits=force) + 
-  labs(color = 'gene fusion phenotype') +
-  theme_grey() + 
+pb<-ggplot(effects_by_sig[sigsWeCareAbout, on = 'signature'],  aes(sig_weight, effect_share, fill = fusion)) + 
+  facet_wrap(~signature) + geom_point(show.legend = F, shape = 21, color = 'black', size = 3) + 
+  xlab('Mutational source weight') + ylab('Cancer effect weight') + 
+  scale_x_continuous(limits = c(0, .8)) + scale_y_continuous(limits = c(0, .8)) +
+  scale_fill_manual(values = fusColors,limits=force) + 
+  labs(color = 'gene fusion genotype') +
+  theme_classic() + 
+  theme(panel.border = element_rect(color = 'black', fill = NA)) +
   geom_abline(color = 'darkgrey', linetype = 'dashed')
 
 #color the facet panels by signature
@@ -316,29 +317,28 @@ for (i in stripr) {
   k <- k+1
 }
 
-# Need legend for gene fusion phenotypes.
+# Need legend for gene fusion genotypes.
 # Using panel B gives dots, not boxes.
 # Instead, save a dummy graph and never render,
 # storing its legend. 
 dummyDat<-data.frame(matrix(ncol=3,nrow = 3,data = (1/12)))
-colnames(dummyDat)<-c("dumX","dumY","Gene fusion phenotype")
-dummyDat$`Gene fusion phenotype`<-factor(repsss,levels = repsss)
+colnames(dummyDat)<-c("dumX","dumY","Gene fusion genotype")
+dummyDat$`Gene fusion genotype`<-factor(repsss,levels = repsss)
 
 lplot2p<-ggplot(data = dummyDat,
                   aes(x=as.character(dumX),
                       y=dumY,
-                      fill=`Gene fusion phenotype`))+
+                      fill=`Gene fusion genotype`))+
   geom_bar(stat="identity",color="black",show.legend = T)+
   scale_fill_manual(values = fusColors,limits=force)+
-  theme(legend.title=element_text(size=12),legend.text=element_text(size=10)) 
+  theme(legend.title=element_text(size=12),legend.text=element_text(size=10),
+        legend.justification = 'top') 
 
 legend2<-get_legend(lplot2p)
-lplot2p<-lplot2p+theme(legend.title=element_text(size=11),legend.text=element_text(size=9)) 
-lplot2p<-lplot2p+theme(legend.margin=margin(l=20))
-legend2a<-get_legend(lplot2p)
+
 
 grid = plot_grid(ga,gb,plot_grid(gc1,gc2,ncol=2,labels=c("C","D")),
-                 plot_grid(legend1,NULL,legend2,ncol=3,rel_widths = c(1,-.6,1)),ncol = 1, labels = c("A","B"),
+                 plot_grid(legend2,NULL,legend1,ncol=3,rel_widths = c(1,-.6,1), align = 'h', axis = 't'),ncol = 1, labels = c("A","B"),
                  rel_heights = c(1,1,1,0.5))
 cowplot::save_plot('Figure2.png', grid, base_height = 13, base_width = 12.5, bg = 'white')
 

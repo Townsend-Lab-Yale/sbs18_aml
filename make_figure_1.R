@@ -25,8 +25,11 @@ gn_boxplot = ggplot(gn_counts, aes(x = fusion, y = prop_SBS18)) +
   theme_classic() + theme(legend.position = "none")+
   theme(plot.margin = margin(0.2,0.2,1,0.8, "cm"))
 
-gn_boxplot<-gn_boxplot+theme(axis.text=element_text(size=24),
-                             axis.title=element_text(size=28))
+gn_boxplot <- gn_boxplot + theme(axis.text=element_text(size=24),
+                             axis.title=element_text(size=28),
+                             axis.text.x = element_text(margin = margin(b = .41, t = .5, unit = 'cm')))
+
+# okay
 
 # Significance testing (Mann-Whitney U)
 wilcox.test(gn_counts[fusion == 'rr', prop_SBS18],
@@ -49,31 +52,28 @@ dotplot = fig
 # Put some stuff together or legend (some legend material that is shared with figure 2)
 repsss<-c("RUNX1::RUNX1T1", "Other fusions", "No fusions")
 dummyDat<-data.frame(matrix(ncol=3,nrow = 3,data = (1/12)))
-colnames(dummyDat)<-c("dumX","dumY","Gene fusion phenotype")
-dummyDat$`Gene fusion phenotype`<-factor(repsss,levels = repsss)
+colnames(dummyDat)<-c("dumX","dumY","Gene fusion genotype")
+dummyDat$`Gene fusion genotype`<-factor(repsss,levels = repsss)
 
 fusion_legend<-ggplot(data = dummyDat,
                 aes(x=as.character(dumX),
                     y=dumY,
-                    fill=`Gene fusion phenotype`))+
+                    fill=`Gene fusion genotype`))+
   geom_bar(stat="identity",color="black",show.legend = T)+
   scale_fill_manual(values = fusColors,limits=force, 
-                    guide = guide_legend(title = 'Gene fusion\nphenotype'))+
+                    guide = guide_legend(title = 'Gene fusion\ngenotype'))+
   theme(legend.title=element_text(size=19),legend.text=element_text(size=15),
         legend.justification = 'left')
 
 fusion_legend = get_legend(fusion_legend)
 
-
-plots = plot_grid(gn_boxplot, dotplot, rel_widths = c(1.74, 1), align = 'hv', axis = 'b', 
-                  nrow = 1,  hjust = c(-.5, 0.35), label_size = 32, labels = c("A","B"))
-legends = plot_grid(meanLegend, bootLegend, fusion_legend, nrow=3,
-                    rel_heights = c(1,-.4,1,-.4,1))
-
+# c(1, .05, 1.4)
+plots = plot_grid(dotplot, NULL, gn_boxplot, rel_widths = c(1, .04, 1), align = 'hv', axis = 'b', 
+                  nrow = 1,  hjust = c(-0.5), label_size = 32, labels = c("A", "", "B"))
+legends = plot_grid(NULL, meanLegend, bootLegend, fusion_legend, NULL, nrow=5,
+                    rel_heights = c(.15, .2, .2, .2, .25))
 fig1 = plot_grid(plots, legends, nrow = 1, rel_widths = c(6.85, 1))
-                 
-                 
-save_plot("Figure1.png", fig1, base_height = 10.2, base_width = 28, bg = 'white')
+save_plot("Figure1.png", fig1, base_height = 10.2, base_width = 26, bg = 'white')
 
 
 # For reporting cumulative attribution of SBS1, SBS5, SBS18, SBS40,
