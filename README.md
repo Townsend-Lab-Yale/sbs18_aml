@@ -15,4 +15,4 @@ Prerequisites for reproducibility
 ---------------------------------
 - TCGA AML MAF data from [cBioPortal](https://www.cbioportal.org) under identifier _laml_tcga_pan_can_atlas_2018_.
 - Pediatric AML MAF from [Gunnarsson et al.](https://www.nature.com/articles/s41375-021-01242-0), available on request [here](https://figshare.com/s/5a1ca3f39611c39bfaae).
-- cancereffectsizeR package [(installation instructions)](https://townsend-lab-yale.github.io/cancereffectsizeR/), and all other R packages used in scripts (available from CRAN or Bioconductor).
+- cancereffectsizeR package ([installation instructions](https://townsend-lab-yale.github.io/cancereffectsizeR/)), and all other R packages used in scripts (available from CRAN or Bioconductor).
